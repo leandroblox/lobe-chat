@@ -3,6 +3,7 @@
  */
 import { publicProcedure, router } from '@/libs/trpc/lambda';
 
+import { adminRouter } from './admin';
 import { agentRouter } from './agent';
 import { aiChatRouter } from './aiChat';
 import { aiModelRouter } from './aiModel';
@@ -20,6 +21,7 @@ import { generationTopicRouter } from './generationTopic';
 import { groupRouter } from './group';
 import { imageRouter } from './image';
 import { importerRouter } from './importer';
+import { inviteRouter } from './invite';
 import { klavisRouter } from './klavis';
 import { knowledgeBaseRouter } from './knowledgeBase';
 import { marketRouter } from './market';
@@ -35,6 +37,7 @@ import { usageRouter } from './usage';
 import { userRouter } from './user';
 
 export const lambdaRouter = router({
+  admin: adminRouter,
   agent: agentRouter,
   aiChat: aiChatRouter,
   aiModel: aiModelRouter,
@@ -53,6 +56,7 @@ export const lambdaRouter = router({
   healthcheck: publicProcedure.query(() => "i'm live!"),
   image: imageRouter,
   importer: importerRouter,
+  invite: inviteRouter,
   klavis: klavisRouter,
   knowledgeBase: knowledgeBaseRouter,
   market: marketRouter,

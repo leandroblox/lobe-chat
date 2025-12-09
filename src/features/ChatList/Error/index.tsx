@@ -51,7 +51,8 @@ const getErrorAlertConfig = (
     case AgentRuntimeErrorType.ModelNotFound:
     case AgentRuntimeErrorType.QuotaLimitReached:
     case AgentRuntimeErrorType.ExceededContextWindow:
-    case AgentRuntimeErrorType.LocationNotSupportError: {
+    case AgentRuntimeErrorType.LocationNotSupportError:
+    case ChatErrorType.SubscriptionPlanLimit: {
       return {
         type: 'warning',
       };

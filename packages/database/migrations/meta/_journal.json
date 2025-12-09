@@ -420,6 +420,27 @@
       "when": 1764858574403,
       "tag": "0059_add_normalized_email_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1764966918843,
+      "tag": "0060_superb_mac_gargan",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1764968572736,
+      "tag": "0061_true_weapon_omega",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1764969711260,
+      "tag": "0062_ambiguous_carlie_cooper",
+      "breakpoints": true
     }
   ],
   "version": "6"

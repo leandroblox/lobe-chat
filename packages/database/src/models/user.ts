@@ -84,6 +84,7 @@ export class UserModel {
         settingsSystemAgent: userSettings.systemAgent,
         settingsTTS: userSettings.tts,
         settingsTool: userSettings.tool,
+        tokenQuota: users.tokenQuota,
         username: users.username,
       })
       .from(users)
@@ -128,6 +129,7 @@ export class UserModel {
       lastName: state.lastName || undefined,
       preference: state.preference as UserPreference,
       settings,
+      tokenQuota: state.tokenQuota,
       userId: this.userId,
       username: state.username || undefined,
     };

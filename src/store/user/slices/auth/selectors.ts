@@ -42,6 +42,8 @@ export const userProfileSelectors = {
   userAvatar: (s: UserStore): string => s.user?.avatar || '',
   userId: (s: UserStore) => s.user?.id,
   userProfile: (s: UserStore): LobeUser | null | undefined => s.user,
+  userQuota: (s: UserStore): number | null | undefined => s.user?.tokenQuota,
+  userTokenUsed: (s: UserStore): number | null | undefined => s.user?.tokenUsed,
   username,
 };
 

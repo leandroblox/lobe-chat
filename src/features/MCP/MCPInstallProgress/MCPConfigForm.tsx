@@ -117,7 +117,6 @@ const MCPConfigForm = memo<MCPConfigFormProps>(({ configSchema, identifier, onCa
                   {item.desc as string}
                 </Markdown>
               ),
-              key: item.label,
               label: item.label,
               name: item.name,
               rules: [{ required: true }],

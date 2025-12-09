@@ -6,6 +6,10 @@ import { useTranslation } from 'react-i18next';
 
 import { DEFAULT_MODEL_PROVIDER_LIST } from '@/config/modelProviders';
 
+// wrapper to strip invalid props like "inverse"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const SafeProviderIcon = ({ inverse: _inverse, ...props }: any) => <ProviderIcon {...props} />;
+
 export const useCategory = () => {
   const { t } = useTranslation('discover');
 
@@ -13,7 +17,7 @@ export const useCategory = () => {
     () =>
       uniqBy(DEFAULT_MODEL_PROVIDER_LIST, (item) => item.id).map((item) => {
         return {
-          icon: <ProviderIcon provider={item.id} size={18} type={'mono'} />,
+          icon: <SafeProviderIcon provider={item.id} size={18} type={'mono'} />,
           key: item.id,
           label: item.name,
         };

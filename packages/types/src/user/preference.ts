@@ -12,6 +12,8 @@ export interface LobeUser {
   fullName?: string | null;
   id: string;
   latestName?: string | null;
+  tokenQuota?: number | null;
+  tokenUsed?: number | null;
   username?: string | null;
 }
 
@@ -80,6 +82,8 @@ export interface UserInitializationState {
   preference: UserPreference;
   settings: PartialDeep<UserSettings>;
   subscriptionPlan?: Plans;
+  tokenQuota?: number | null;
+  tokenUsed?: number | null;
   userId?: string;
   username?: string;
 }

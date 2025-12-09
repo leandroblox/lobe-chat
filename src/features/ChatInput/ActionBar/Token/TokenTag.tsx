@@ -16,6 +16,8 @@ import { useChatStore } from '@/store/chat';
 import { dbMessageSelectors, topicSelectors } from '@/store/chat/selectors';
 import { useToolStore } from '@/store/tool';
 import { toolSelectors } from '@/store/tool/selectors';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import ActionPopover from '../components/ActionPopover';
 import TokenProgress from './TokenProgress';
@@ -50,7 +52,11 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
     agentChatConfigSelectors.isAgentEnableSearch(s),
   ]);
 
-  const maxTokens = useModelContextWindowTokens(model, provider);
+  const userQuota = useUserStore(userProfileSelectors.userQuota);
+  const userUsed = useUserStore(userProfileSelectors.userTokenUsed);
+  const modelContextWindow = useModelContextWindowTokens(model, provider);
+  const maxTokens =
+    userQuota && userQuota > 0 ? Math.min(userQuota, modelContextWindow) : modelContextWindow;
 
   // Tool usage token
   const canUseTool = useModelSupportToolUse(model, provider);
@@ -89,6 +95,8 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
 
   // Total token
   const totalToken = systemRoleToken + historySummaryToken + toolsToken + chatsToken;
+  // If user has quota, use global usage display, otherwise use context usage
+  const displayUsed = userQuota && userQuota > 0 ? userUsed || 0 : totalToken;
 
   const content = (
     <Flexbox gap={12} style={{ minWidth: 200 }}>
@@ -151,13 +159,13 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
             color: theme.colorSuccess,
             id: 'used',
             title: t('tokenDetails.used'),
-            value: totalToken,
+            value: displayUsed,
           },
           {
             color: theme.colorFill,
             id: 'rest',
             title: t('tokenDetails.rest'),
-            value: maxTokens - totalToken,
+            value: maxTokens - displayUsed,
           },
         ]}
         showIcon
@@ -177,7 +185,7 @@ const Token = memo<TokenTagProps>(({ total: messageString }) => {
           remained: t('tokenTag.remained'),
           used: t('tokenTag.used'),
         }}
-        value={totalToken}
+        value={displayUsed}
       />
     </ActionPopover>
   );

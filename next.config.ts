@@ -268,6 +268,11 @@ const nextConfig: NextConfig = {
       permanent: false,
       source: '/repos',
     },
+    {
+      destination: '/en-US/admin',
+      permanent: false,
+      source: '/admin',
+    },
   ],
 
   // when external packages in dev mode with turbopack, this config will lead to bundle error

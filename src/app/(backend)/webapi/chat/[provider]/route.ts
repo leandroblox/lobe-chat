@@ -4,9 +4,13 @@ import {
   ModelRuntime,
 } from '@lobechat/model-runtime';
 import { ChatErrorType } from '@lobechat/types';
+import { eq } from 'drizzle-orm';
 
 import { checkAuth } from '@/app/(backend)/middleware/auth';
+import { users } from '@/database/schemas';
+import { serverDB } from '@/database/server';
 import { createTraceOptions, initModelRuntimeWithUserPayload } from '@/server/modules/ModelRuntime';
+import { UsageRecordService } from '@/server/services/usage';
 import { ChatStreamPayload } from '@/types/openai/chat';
 import { createErrorResponse } from '@/utils/errorResponse';
 import { getTracePayload } from '@/utils/trace';
@@ -17,6 +21,26 @@ export const POST = checkAuth(async (req: Request, { params, jwtPayload, createR
   const provider = (await params)!.provider!;
 
   try {
+    // ============  0. Check User Quota   ============ //
+    const userId = jwtPayload.userId!;
+    const user = await serverDB.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (user?.tokenQuota && user.tokenQuota > 0) {
+      const usageService = new UsageRecordService(serverDB, userId);
+      const usage = await usageService.findByMonth();
+
+      const totalUsed = usage.reduce((acc, item) => acc + (item.totalTokens || 0), 0);
+
+      if (totalUsed >= user.tokenQuota) {
+        return createErrorResponse(ChatErrorType.SubscriptionPlanLimit, {
+          error: { message: 'Monthly token quota exceeded' },
+          provider,
+        });
+      }
+    }
+
     // ============  1. init chat model   ============ //
     let modelRuntime: ModelRuntime;
     if (createRuntime) {

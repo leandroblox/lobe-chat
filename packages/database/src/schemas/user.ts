@@ -2,7 +2,7 @@
 import { DEFAULT_PREFERENCE } from '@lobechat/const';
 import type { CustomPluginParams } from '@lobechat/types';
 import { LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk';
-import { boolean, index, jsonb, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, jsonb, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 
 import { timestamps, timestamptz, varchar255 } from './_helpers';
 
@@ -33,6 +33,8 @@ export const users = pgTable(
 
     // better-auth admin
     role: text('role'),
+    tokenQuota: integer('token_quota'), // Monthly token quota
+    isBlocked: boolean('is_blocked').default(false), // Block user from login/chat
     banned: boolean('banned').default(false),
     banReason: text('ban_reason'),
     banExpires: timestamptz('ban_expires'),

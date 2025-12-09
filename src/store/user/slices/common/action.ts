@@ -116,6 +116,8 @@ export const createCommonSlice: StateCreator<
                     fullName: data.fullName,
                     id: data.userId,
                     latestName: data.lastName,
+                    tokenQuota: data.tokenQuota,
+                    tokenUsed: data.tokenUsed,
                     username: data.username,
                   } as LobeUser)
                 : get().user;

@@ -24,6 +24,7 @@ import { KeyVaultsGateKeeper } from '@/server/modules/KeyVaultsEncrypt';
 import { S3 } from '@/server/modules/S3';
 import { FileService } from '@/server/services/file';
 import { NextAuthUserService } from '@/server/services/nextAuthUser';
+import { UsageRecordService } from '@/server/services/usage';
 import { UserService } from '@/server/services/user';
 
 const usernameSchema = z
@@ -113,6 +114,10 @@ export const userRouter = router({
       ctx.sessionModel.hasMoreThanN(1),
     ]);
 
+    const usageService = new UsageRecordService(ctx.serverDB, ctx.userId);
+    const usage = await usageService.findByMonth();
+    const tokenUsed = usage.reduce((acc, item) => acc + (item.totalTokens || 0), 0);
+
     return {
       avatar: state.avatar,
       canEnablePWAGuide: hasMoreThan4Messages,
@@ -129,6 +134,8 @@ export const userRouter = router({
       lastName: state.lastName,
       preference: state.preference as UserPreference,
       settings: state.settings,
+      tokenQuota: state.tokenQuota,
+      tokenUsed,
       userId: ctx.userId,
       username: state.username,
     } satisfies UserInitializationState;

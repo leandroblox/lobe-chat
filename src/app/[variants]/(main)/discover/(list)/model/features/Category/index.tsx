@@ -67,7 +67,11 @@ const Category = memo(() => {
                   </Tag>
                 ),
           ...item,
-          icon: <Icon icon={item.icon} size={18} />,
+          icon: (
+            <div style={{ alignItems: 'center', display: 'flex' }}>
+              <Icon icon={item.icon} size={18} />
+            </div>
+          ),
           label: <Link to={genUrl(item.key)}>{item.label}</Link>,
         };
       })}

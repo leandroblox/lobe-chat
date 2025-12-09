@@ -27,7 +27,8 @@ const getStatus = (errorType: ILobeAgentRuntimeErrorType | ErrorType) => {
     }
 
     case AgentRuntimeErrorType.InsufficientQuota:
-    case AgentRuntimeErrorType.QuotaLimitReached: {
+    case AgentRuntimeErrorType.QuotaLimitReached:
+    case ChatErrorType.SubscriptionPlanLimit: {
       return 429;
     }
 
