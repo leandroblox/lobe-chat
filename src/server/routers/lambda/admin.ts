@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { eq, sql } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { invites, messages, serverConfigs, users } from '@/database/schemas';
@@ -103,13 +103,57 @@ export const adminRouter = router({
       const { page, pageSize } = input;
       const offset = (page - 1) * pageSize;
 
+      // Get users first
       const allUsers = await ctx.serverDB.query.users.findMany({
         limit: pageSize,
         offset: offset,
         orderBy: (users, { desc }) => [desc(users.createdAt)],
       });
 
-      return allUsers;
+      // Calculate start of current month
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      // Aggregate token usage for these users for the current month
+      // We can't easily join with the query builder, so we'll run a separate aggregation
+      // for the users we just fetched.
+
+      const userIds = allUsers.map((u) => u.id);
+
+      let usageMap = new Map<string, number>();
+
+      if (userIds.length > 0) {
+        // cast metadata ->> field to integer for summing
+        const totalTokens = sql<number>`
+          sum(
+                    COALESCE((${messages.metadata}->>'totalInputTokens')::int, 0) + 
+                    COALESCE((${messages.metadata}->>'totalOutputTokens')::int, 0)
+                  )
+        `;
+
+        const usageStats = await ctx.serverDB
+          .select({
+            totalTokens: totalTokens,
+            userId: messages.userId,
+          })
+          .from(messages)
+          .where(
+            sql`
+              ${inArray(messages.userId, userIds)}
+                          AND ${messages.createdAt} >= ${startOfMonth}
+            `,
+          )
+          .groupBy(messages.userId);
+
+        usageStats.forEach((stat) => {
+          usageMap.set(stat.userId, Number(stat.totalTokens));
+        });
+      }
+
+      return allUsers.map((user) => ({
+        ...user,
+        currentMonthTokens: usageMap.get(user.id) || 0,
+      }));
     }),
 
   revokeInvite: adminProcedure

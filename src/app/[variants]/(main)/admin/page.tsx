@@ -157,11 +157,24 @@ const AdminPage = () => {
       width: 100,
     },
     {
-      dataIndex: 'tokenQuota',
-      key: 'tokenQuota',
-      render: (val: number) => (val ? val.toLocaleString() : 'Unlimited'),
-      title: 'Quota',
-      width: 120,
+      key: 'usage',
+      render: (_: any, record: any) => {
+        const used = record.currentMonthTokens || 0;
+        const quota = record.tokenQuota;
+        const quotaText = quota ? quota.toLocaleString() : '∞';
+
+        const isOverLimit = quota && used >= quota;
+        const isNearLimit = quota && used >= quota * 0.9;
+        const color = isOverLimit ? '#ff4d4f' : isNearLimit ? '#faad14' : undefined;
+
+        return (
+          <span style={{ color }}>
+            {used.toLocaleString()} / {quotaText}
+          </span>
+        );
+      },
+      title: 'Usage / Quota',
+      width: 150,
     },
     {
       key: 'action',
